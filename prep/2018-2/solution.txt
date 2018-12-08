@@ -1,0 +1,7 @@
+Pregunta 1
+
+En el escenario planteado, tanto la tarea T0 como su correspondiente vigilante (watchdog) llegan a la tercera ronda en el mismo instante (clock == 4). El modelo no le da prioridad a ninguno de estos dos procesos, así que la elección entre T0 y su vigilante es pseudoaleatoria, usando la semilla. Resulta que el vigilante salió elegido antes que T0, con lo cual encuentra que T0 todavía no ha ejecutado su tercera ronda.
+
+Pregunta 2
+
+La instrucción atomic tiene significados diferentes en modo simulación (no hace nada) y en modo verificación (crea un bloque atómico). La semántica correcta en ambos modos se obtiene sustituyendo atomic por d_step, que crea un bloque atómico tanto en modo simulación como en modo verificación.

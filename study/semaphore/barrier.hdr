@@ -1,0 +1,33 @@
+#ifndef BARRIER_HDR
+#define BARRIER_HDR
+
+#include "semaphore.hdr"
+
+typedef Barrier {
+    byte      _total
+    byte      _count
+    Semaphore _mutex
+    Semaphore _turnstile[2]
+}
+
+inline bar_init(bar, n) {
+    bar._total = n
+    bar._count = n
+    sem_init(bar._mutex, 1)
+    sem_init(bar._turnstile[0], 0)
+    sem_init(bar._turnstile[1], 0)
+}
+
+inline bar_phase(bar, id) {
+    sem_wait(bar._mutex)
+        bar._count--
+        if
+        :: bar._count
+        :: else -> bar._count = bar._total
+                   sem_init(bar._turnstile[id], bar._total)
+        fi
+    sem_signal(bar._mutex)
+    sem_wait(bar._turnstile[id])
+}
+
+#endif

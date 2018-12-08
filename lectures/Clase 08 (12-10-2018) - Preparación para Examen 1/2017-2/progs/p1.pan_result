@@ -1,0 +1,50 @@
+pan:1: invalid end state (at depth 6)
+pan: wrote p1.pml1.trail
+pan: wrote p1.pml2.trail
+pan: wrote p1.pml3.trail
+pan: wrote p1.pml4.trail
+pan: wrote p1.pml5.trail
+pan: wrote p1.pml6.trail
+pan: wrote p1.pml7.trail
+pan: wrote p1.pml8.trail
+pan: wrote p1.pml9.trail
+pan: wrote p1.pml10.trail
+pan: wrote p1.pml11.trail
+pan: wrote p1.pml12.trail
+pan: wrote p1.pml13.trail
+pan: wrote p1.pml14.trail
+
+(Spin Version 6.4.6 -- 2 December 2016)
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             - (none specified)
+        assertion violations    +
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      +
+
+State-vector 28 byte, depth reached 7, errors: 14
+       74 states, stored
+       15 states, matched
+       89 transitions (= stored+matched)
+        0 atomic steps
+hash conflicts:         0 (resolved)
+
+Stats on memory usage (in Megabytes):
+    0.004       equivalent memory usage for states (stored*(State-vector + overhead))
+    0.292       actual memory usage for states
+  128.000       memory used for hash table (-w24)
+    0.534       memory used for DFS stack (-m10000)
+  128.730       total actual memory usage
+
+
+unreached in proctype A
+        (0 of 5 states)
+unreached in proctype B
+        (0 of 4 states)
+unreached in init
+        p1.pml:22, state 2, "assert((x==100))"
+        p1.pml:23, state 3, "-end-"
+        (2 of 3 states)
+
+pan: elapsed time 0 seconds

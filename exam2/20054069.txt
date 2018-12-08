@@ -1,0 +1,161 @@
+Pregunta 1:
+-----------
+
+Introducimos una variable contadora de lectores y escritores activos:
+
+    byte working = NRDRS + NWRTS
+
+Cuando un lector o escritor ha terminado de trabajar, decrementa este contador:
+
+    proctype ReaderWriter(byte i; mtype who) {
+        // ...
+        working--
+    }
+
+Finalmente, el proceso Idle termina de trabajar cuando el contador llega a cero:
+
+    proctype Idle() {
+        do
+        ::  atomic {
+                timeout ->
+                    if
+                    ::  working == 0 -> break
+                    ::  else ->
+                        if
+                        ::  t >= TOTALT || _nr_pr == 3 -> break
+                        ::  else ->
+                                printf("t: %d -> %d\n",t,t+1)
+                                t++
+                        fi
+                    fi
+            }
+        od
+    }
+
+Esto produce la salida deseada.
+
+Pregunta 2:
+-----------
+
+Introducimos una variable que indica el instante en que el proceso Idle debe pausar. Inicialmente debe pausar para permitir que el lector 0 inicie:
+
+Agregamos un lector o escritor ficticio y creamos una variable que indica el momento en que el proceso Idle debe pausar:
+
+    byte start[NRDRS+NWRTS+1]
+    byte stop
+
+    init {
+        for (...) {
+            // ...
+        }
+        start[NRDRS + NWRTS] = TOTALT
+        stop = start[0]
+    }
+
+Cuando un lector o escritor hace su solicitud, habilita al siguiente:
+
+    atomic {
+        ch ! i                  // send request
+        assert(start[i] == t)
+        printf("t=%d: %e %d send a request\n",t,who,i)
+        stop = start[i + 1]
+    }
+
+Finalmente, el proceso Idle sólo incrementa el contador de tiempo cuando todavía falta tiempo para que el siguiente lector o escritor inicie:
+
+    do
+    ::  atomic {
+            timeout ->
+                if
+                ::  t >= TOTALT || _nr_pr == 3 -> break
+                ::  t > stop ->
+                        printf("t: %d -> %d\n",t,t+1)
+                        t++
+                ::  else -> skip
+                fi
+        }
+    od
+
+Pregunta 3:
+-----------
+
+En la línea 74, verificamos que no hay escritores trabajando:
+
+    do
+    ::  count > 0 ->    // readers are welcome
+        assert(nw == 0)
+
+En la línea 82, verificamos que no se ha recibido ninguna solicitud de escritura:
+
+    if
+    ::  nempty(finished) ->
+            atomic {
+                finished ? r
+                printf("t=%d: finished Reader %d\n",t,r)
+            }
+            count++
+            assert(nr + count > 0 && nr + count <= MAXRDRS)
+
+En la línea 89, verificamos que sí se ha recibido la solicitud de escritura:
+
+    ::  empty(finished) && nempty(writerequest) ->
+            atomic {
+            writerequest ? w
+                printf("t=%d: request from Writer %d\n",t,w)
+            }
+            count = count - MAXRDRS    // no more readers
+            assert(nr + count == 0)
+
+En la línea 96, verificamos que no se ha recibido ninguna solicitud de escritura:
+
+    ::  empty(finished) && empty(writerequest) && nempty(readrequest) ->
+            atomic {
+                readrequest ? r
+                printf("t=%d: request from Reader %d\n",t,r)
+            }
+            count--
+            assert(count > 0 && count < MAXRDRS)
+            atomic {
+                mbox[r] ! true  // send ok to reader
+                printf("t=%d: OK to Reader %d\n",t,r)
+            }
+
+En la línea 103, verificamos que ningún lector o escritor está trabajando:
+
+    ::  count == 0 ->   // there aren't readers, writer may go
+            assert(nr == 0 && nw == 0)
+            atomic {
+                mbox[w] ! true  // send ok to writer
+                printf("t=%d: OK to Writer %d\n",t,w)
+            }
+            atomic {
+                finished ? w    // wait writer finishing
+                printf("t=%d: finished Writer %d\n",t,w)
+            }
+            count = MAXRDRS     // initial state
+
+En la línea 114, verificamos que la variable count indica cuántos lectores están trabajando. El escritor debe esperarlos a todos.
+
+    ::  count < 0 ->    // writer is waiting because readers access
+            assert(nr + count == 0)
+            atomic {
+                finished ? r
+                printf("t=%d: finished Reader %d\n",t,r)
+            }
+            count++
+    od
+
+Pregunta 4:
+-----------
+
+El modelo sched1_v6_b.pml tiene un ligero error. Si una tarea T_i completa su ejecución precisamente en el plazo indicado (sin holgura), tanto la tarea como su proceso vigilante (Watchdog) compiten por ejecutar la siguiente instrucción en dicho instante. Lo correcto sería que la tarea siempre gane, entonces “marca turno”, es decir, ejecuta la instrucción
+
+    done[ID] = true
+
+Luego, el vigilante verifica que la tarea en efecto marcó turno:
+
+    assert done[ID]
+
+Pero el vigilante podría ganar, en cuyo caso el aserto falla, porque la tarea todavía no “marcó turno”.
+
+El modelo sched2_v6.pml corrige este defecto. Ya no recurrimos an un proceso vigilante, sino que cada tarea se encarga de verificar el cumplimiento oportuno de sus propios plazos. La simulación sigue fallando, pero esto es porque el algoritmo “scheduler” en efecto no es correcto. El algoritmo modelado no garantiza que todas las tareas cumplan con sus plazos. Un algoritmo correcto debería darles prioridad a las tareas que tienen menos holgura (el “deadline” es más inminente). En otras palabras, sched2_v6.pml un modelo correcto de un algoritmo incorrecto.

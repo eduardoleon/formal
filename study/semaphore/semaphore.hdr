@@ -1,0 +1,10 @@
+#ifndef SEMAPHORE_HDR
+#define SEMAPHORE_HDR
+
+typedef Semaphore { byte _free }
+
+#define sem_init(sem, n)  sem._free = n
+#define sem_wait(sem)     atomic { sem._free > 0; sem._free-- }
+#define sem_signal(sem)   sem._free++
+
+#endif

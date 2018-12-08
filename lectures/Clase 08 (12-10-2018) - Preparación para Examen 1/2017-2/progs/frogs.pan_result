@@ -1,0 +1,31 @@
+pan:1: assertion violated  !( !( !(((((((stones[0]==1)&&(stones[1]==1))&&(stones[2]==1))&&(stones[4]==2))&&(stones[5]==2))&&(stones[6]==2))))) (at depth 52)
+pan: wrote frogs.pml.trail
+
+(Spin Version 6.4.6 -- 2 December 2016)
+Warning: Search not completed
+        + Partial Order Reduction
+
+Full statespace search for:
+        never claim             + (ltl_0)
+        assertion violations    + (if within scope of claim)
+        cycle checks            - (disabled by -DSAFETY)
+        invalid end states      - (disabled by never claim)
+
+State-vector 76 byte, depth reached 52, errors: 1
+       42 states, stored
+        8 states, matched
+       50 transitions (= stored+matched)
+       20 atomic steps
+hash conflicts:         0 (resolved)
+
+Stats on memory usage (in Megabytes):
+    0.004       equivalent memory usage for states (stored*(State-vector + overhead))
+    0.286       actual memory usage for states
+  128.000       memory used for hash table (-w24)
+    0.534       memory used for DFS stack (-m10000)
+  128.730       total actual memory usage
+
+
+
+pan: elapsed time 0 seconds
+ltl ltl_0: [] (! (((((((stones[0]==female)) && ((stones[1]==female))) && ((stones[2]==female))) && ((stones[4]==male))) && ((stones[5]==male))) && ((stones[6]==male))))

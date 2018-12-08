@@ -1,0 +1,24 @@
+digraph p_A {
+size="8,10";
+  GT [shape=box,style=dotted,label="A"];
+  GT -> S1;
+	S1 -> S2  [color=black,style=bold,label="time = (time+1)"];
+	S2 -> S3  [color=black,style=bold,label="time = (time+2)"];
+	S3 -> S4  [color=black,style=bold,label="t[0] = 3"];
+	S4 -> S26  [color=black,style=bold,label="a[0] = 2"];
+	S26 -> S29  [color=black,style=bold,label="((a[0]==0))"];
+	S26 -> S8  [color=black,style=bold,label="else"];
+	S29 -> S30  [color=black,style=bold,label="t[0] = 1000"];
+	S30 -> S0  [color=black,style=solid,label="-end-"];
+  S30 [color=blue,style=bold,shape=box];
+	S8 -> S11  [color=black,style=bold,label="a[0] = (a[0]-1)"];
+	S11 -> S24  [color=black,style=bold,label="((t[0]<=t[1]))"];
+	S24 -> S17  [color=black,style=solid,label="((cond1!=0))"];
+	S24 -> S23  [color=black,style=solid,label="((cond1==0))"];
+	S17 -> S18  [color=black,style=dashed,label="((mutex>0))"];
+	S18 -> S19  [color=black,style=bold,label="time = (time+1)"];
+	S19 -> S20  [color=black,style=bold,label="time = (time+2)"];
+	S20 -> S21  [color=black,style=bold,label="t[0] = (t[0]+3)"];
+	S21 -> S26  [color=black,style=bold,label="mutex = (mutex+1)"];
+	S23 -> S26  [color=black,style=bold,label="time = (time+1)"];
+}

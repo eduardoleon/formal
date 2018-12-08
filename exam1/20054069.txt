@@ -1,0 +1,87 @@
+Pregunta 1
+----------
+
+a) Timeout significa que el proceso se queda estancado en un estado inválido en el cual no puede hacer progreso. Cuando el bucle externo inicia, el estado de las variables relevantes es
+
+    t = {3,0}
+    a = {2,0}
+
+En la iteración inicial, el proceso entra a la rama “else”, con lo cual a[0] se decrementa.
+
+    a = {1,0}
+
+Y luego entramos a un bucle interno en el cual ninguna rama está disponible
+
+    do
+    :: t[0] <= t[1] -> break
+    od
+
+porque t[0] = 3 es mayor que t[1] = 0. El estado final es no válido porque no es el fin del proceso ni tampoco estamos en una posición etiquetada con “end<algo>”.
+
+b) Según el grafo de estados, en la primera iteración (S26), el proceso entra en la rama “else” (S8), se decrementa a[0] (S11) y el proceso se queda estancado porque t[0] <= t[1]. El estado siguiente debería ser S24.
+
+c) Una manera de hacer que el programa por lo menos no se quede estancado es reemplazar el bucle interno con el siguiente condicional.
+
+    if
+    :: t[0] <= t[1] -> break
+    :: else         -> skip
+    fi
+
+Esto dará una condición de terminación (esperamos que útil) para el bucle externo.
+
+Para lograr el no determinismo en el otro condicional, no necesitamos la variable cond1. En lugar de eso, usamos guardias “true” en ambos casos:
+
+    if
+    :: true -> ...
+    :: true -> ...
+    fi
+
+Finalmente, para que el bloqueo y desbloqueo del mutex tenga éxito, necesitamos que esté inicializado a 1.
+
+    byte mutex = 1
+
+Pregunta 2
+----------
+
+a) El error es que es posible que las guardias “_nr_pr == 1” e “i == 8” sean simultáneamente ciertas. En este caso, es perfectamente posible que el proceso principal intente crear un proceso AtomicSwap(8,9), con consecuencias desastrosas, ya que las indexaciones mutex[8] y mutex[9] son inválidas. La solución es cambiar la guardia como sigue:
+
+    do
+    :: i == 8 -> break
+    :: else   -> run AtomicSwap(i,i+1); i = i+2
+    od
+
+Y sólo después esperar a que todos los procesos hijos terminen
+
+    _nr_pr == 1
+
+b) Uno de los escenarios erróneos posibles es que “i == l” y “j == k”. En este caso, es posible que uno de los procesos AtomicSwap bloquee mutex[i] y el otro bloquee el mutex[j], con lo cual dichos procesos se bloquean mutuamente. La solución es garantizar que f < s, intercambiándolos de ser necesario.
+
+    if
+    :: f > s -> t = f; f = s; s = t
+    :: else  -> skip
+    fi
+
+El otro problema con el modelo es que mutex[f] y mutex[s] sólo son desbloqueados cuando el intercambio de valores ocurre con éxito. La solución es mover las líneas que desbloquean mutex[f] y mutex[s] a lugares más apropiados.
+
+Pregunta 3
+----------
+
+El modelo está en el archivo tictactoe_v1.pml. La simulación ahora imprime la posición después de cada jugada. La variable “w” indica quién ganó el juego:
+
+* 1 indica que el primer jugador ganó
+* 2 indica que el segundo jugador ganó
+* 3 indica que el juego fue empatado
+
+El aserto “w == 1” al final de la simulación genera trails para todos los casos en que el segundo jugador gana o empata. No sé cómo obligar a Spin a sólo generar trails en los que ambos jugadores hacen jugadas óptimas.
+
+Es posible forzar a que el primer jugador haga una jugada específica con el siguiente código antes del bucle principal:
+
+    b.r[XREF].s[YREF] = 1
+    z = 1
+
+Las macros XREF e YREF deben estar definidas como sigue:
+
+    #define XREF 2
+    #define YREF 1
+
+Obviamente las maneras óptimas de jugar podrían ser hallada usando programación dinámica, más precisamente, el algoritmo minimax.

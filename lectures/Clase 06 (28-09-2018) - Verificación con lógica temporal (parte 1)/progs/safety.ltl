@@ -1,0 +1,9 @@
+never  {    /* ![]mutex */
+T0_init:
+	do
+	:: atomic { (! ((mutex))) -> assert(!(! ((mutex)))) }
+	:: (1) -> goto T0_init
+	od;
+accept_all:
+	skip
+}

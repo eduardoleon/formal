@@ -1,0 +1,51 @@
+      0,1 -->
+          <-- 0
+      0,2 -->
+      total time = 8
+spin: bridge3.pml:37, Error: assertion violated
+spin: text of failed assertion: assert((t==0))
+spin: trail ends after 23 steps
+#processes: 1
+                a[0] = 1
+                a[1] = 2
+                a[2] = 5
+                c[0] = 1
+                c[1] = 1
+                c[2] = 1
+                t = 8
+ 23:    proc  0 (Bridge:1) bridge3.pml:38 (state 41) <valid end state>
+1 process created
+      0,1 -->
+          <-- 1
+      1,2 -->
+      total time = 9
+spin: bridge3.pml:37, Error: assertion violated
+spin: text of failed assertion: assert((t==0))
+spin: trail ends after 23 steps
+#processes: 1
+                a[0] = 1
+                a[1] = 2
+                a[2] = 5
+                c[0] = 1
+                c[1] = 1
+                c[2] = 1
+                t = 9
+ 23:    proc  0 (Bridge:1) bridge3.pml:38 (state 41) <valid end state>
+1 process created
+      0,2 -->
+          <-- 2
+      1,2 -->
+      total time = 15
+spin: bridge3.pml:37, Error: assertion violated
+spin: text of failed assertion: assert((t==0))
+spin: trail ends after 23 steps
+#processes: 1
+                a[0] = 1
+                a[1] = 2
+                a[2] = 5
+                c[0] = 1
+                c[1] = 1
+                c[2] = 1
+                t = 15
+ 23:    proc  0 (Bridge:1) bridge3.pml:38 (state 41) <valid end state>
+1 process created

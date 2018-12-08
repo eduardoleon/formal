@@ -1,0 +1,27 @@
+#ifndef BOUNDED_HDR
+#define BOUNDED_HDR
+
+#define pbw(i)       P[i]@bw
+#define pcs(i)       P[i]@cs
+
+/* When process 0 is trying to enter the critical section,
+ * the remainder of the computation must start with the
+ * following intervals:
+ * 
+ * (a) Process 1 is not in the critical section
+ * (b) Process 1 is in the critical section
+ * (c) Process 1 is not in the critical section
+ * (d) Process 0 is in the critical section
+ *
+ * The first three intervals may be empty. */
+#define dd           pcs(0)
+#define cc          !pcs(1)  U  (dd)
+#define bb           pcs(1)  U  (cc)
+#define aa          !pcs(1)  U  (bb)
+#define claim        pbw(0) ->  (aa)
+
+bool want[2]
+
+ltl { [] (claim) }
+
+#endif

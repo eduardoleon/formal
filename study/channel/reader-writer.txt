@@ -1,0 +1,28 @@
+We use a bitmask to wait until at least one reader and one writer have made their requests:
+
+    if
+    :: who == reader -> readrequest ! i; pass = pass | 1
+    :: who == writer -> writerequest ! i; pass = pass | 2
+    fi
+
+Only then does the controller begin serving requests:
+
+    pass & 1
+    pass & 2
+
+    do
+    ::  count > 0 ->    // readers are working
+    ::  count == 0 ->   // there aren't readers
+    ::  count < 0 ->    // writer is waiting because readers access
+    od
+
+We use a global accumulator with the types of processes that were served. Readers and writers are type 1 and 2 processes respectively:
+
+    if                      // dec counter
+    :: who == reader -> nr--; group = 10 * group + 1
+    :: who == writer -> nw--; group = 10 * group + 2
+    fi
+
+If the controller gives preference to writers, the first accumulated digit will be 2:
+
+    ltl { <>(group == 2) }
